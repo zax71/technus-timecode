@@ -2585,7 +2585,6 @@ dependencies = [
  "env_logger",
  "log",
  "serde",
- "winit",
 ]
 
 [[package]]
