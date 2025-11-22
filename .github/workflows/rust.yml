@@ -116,11 +116,13 @@ jobs:
           targets: ${{matrix.TARGET}}
       - uses: Swatinem/rust-cache@v2
 
-      - uses: actions-rs/cargo@v1
+      - name: Build binary
+        uses: houseabsolute/actions-rust-cross@v1
         with:
-          use-cross: true
           command: build
-          args: --verbose --release --target=${{ matrix.TARGET }}
+          target: ${{ matrix.TARGET }}
+          args: "--locked --release"
+          strip: true
 
       - name: Rename
         run: cp target/${{ matrix.TARGET }}/release/${{ steps.metadata.outputs.package_name}}${{ matrix.EXTENSION }} ${{ steps.metadata.outputs.package_name}}-${{ matrix.TARGET }}${{ matrix.EXTENSION }}
