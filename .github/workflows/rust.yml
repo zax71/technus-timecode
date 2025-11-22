@@ -68,56 +68,58 @@ jobs:
         run: cargo clippy -- -D warnings
 
   build:
-    runs-on: ${{ matrix.os }}
+    name: Build - ${{ matrix.platform.os-name }}
     strategy:
-      fail-fast: false
       matrix:
-        include:
-          - os: macos-latest
-            TARGET: aarch64-apple-darwin
+        platform:
+          - os-name: FreeBSD-x86_64
+            runs-on: ubuntu-24.04
+            target: x86_64-unknown-freebsd
 
-          - os: ubuntu-latest
-            TARGET: arm-unknown-linux-musleabihf
+          - os-name: Linux-x86_64
+            runs-on: ubuntu-24.04
+            target: x86_64-unknown-linux-musl
 
-          - os: ubuntu-latest
-            TARGET: armv7-unknown-linux-musleabihf
+          - os-name: Linux-aarch64
+            runs-on: ubuntu-24.04
+            target: aarch64-unknown-linux-musl
 
-          - os: ubuntu-latest
-            TARGET: x86_64-unknown-linux-musl
+          - os-name: Linux-riscv64
+            runs-on: ubuntu-24.04
+            target: riscv64gc-unknown-linux-gnu
 
-          - os: windows-latest
-            TARGET: x86_64-pc-windows-msvc
-            EXTENSION: .exe
+          - os-name: Windows-x86_64
+            runs-on: windows-latest
+            target: x86_64-pc-windows-msvc
+            extension: .exe
 
+          - os-name: macOS-x86_64
+            runs-on: macOS-latest
+            target: x86_64-apple-darwin
+
+          # more targets here ...
+
+    runs-on: ${{ matrix.platform.runs-on }}
     steps:
-      - name: Building ${{ matrix.TARGET }}
-        run: echo "${{ matrix.TARGET }}"
-
-      - uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Get Cargo.toml Metadata
         id: metadata
         uses: nicolaiunrein/cargo-get@master
 
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-          targets: ${{matrix.TARGET}}
-
-      # - uses: Swatinem/rust-cache@v2
-
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v1
         with:
           command: build
-          target: ${{ matrix.TARGET }}
+          target: ${{ matrix.platform.target }}
           args: "--locked --release"
           strip: true
 
       - name: Rename
-        run: cp target/${{ matrix.TARGET }}/release/${{ steps.metadata.outputs.package_name}}${{ matrix.EXTENSION }} ${{ steps.metadata.outputs.package_name}}-${{ matrix.TARGET }}${{ matrix.EXTENSION }}
+        run: cp target/${{ matrix.platform.target }}/release/${{ steps.metadata.outputs.package_name}}${{ matrix.platform.extension }} ${{ steps.metadata.outputs.package_name}}-${{ matrix.platform.target }}${{ matrix.platform.extension }}
 
       - uses: actions/upload-artifact@master
         with:
-          name: ${{ steps.metadata.outputs.package_name}}-${{ matrix.TARGET }}${{ matrix.EXTENSION }}
-          path: ${{ steps.metadata.outputs.package_name}}-${{ matrix.TARGET }}${{ matrix.EXTENSION }}
+          name: ${{ steps.metadata.outputs.package_name}}-${{ matrix.platform.target }}${{ matrix.platform.extension }}
+          path: ${{ steps.metadata.outputs.package_name}}-${{ matrix.platform.target }}${{ matrix.platform.extension }}
