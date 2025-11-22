@@ -121,11 +121,11 @@ jobs:
         id: metadata
         uses: nicolaiunrein/cargo-get@master
 
-      - uses: actions-rs/toolchain@v1.0.1
+      - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          target: ${{ matrix.TARGET }}
-          override: true
+          targets: ${{matrix.TARGET}}
+      - uses: Swatinem/rust-cache@v2
 
       - uses: actions-rs/cargo@v1
         with:
