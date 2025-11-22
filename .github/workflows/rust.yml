@@ -18,10 +18,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --all-features
+      - name: Run check
+        run: cargo check --all-features
 
   test:
     name: Test Suite
@@ -35,10 +33,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - run: sudo apt-get install libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libssl-dev
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --lib
+      - name: Run test
+        run: cargo test --lib
 
   fmt:
     name: Rustfmt
@@ -52,10 +48,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+      - name: Run rustfmt
+        run: cargo fmt --all -- --check
 
   clippy:
     name: Clippy
@@ -70,10 +64,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
 
   build:
     runs-on: ${{ matrix.os }}
@@ -111,7 +103,8 @@ jobs:
         with:
           toolchain: stable
           targets: ${{matrix.TARGET}}
-      - uses: Swatinem/rust-cache@v2
+
+      # - uses: Swatinem/rust-cache@v2
 
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v1
