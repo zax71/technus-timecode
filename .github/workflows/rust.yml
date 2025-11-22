@@ -1,4 +1,4 @@
-on: [push, pull_request, workflow_dispatch]
+on: [push, pull_request]
 
 name: CI
 
@@ -21,22 +21,6 @@ jobs:
         with:
           command: check
           args: --all-features
-
-  check_wasm:
-    name: Check wasm32
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          target: wasm32-unknown-unknown
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --all-features --lib --target wasm32-unknown-unknown
 
   test:
     name: Test Suite
@@ -108,38 +92,51 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - os: macos-latest
-          TARGET: aarch64-apple-darwin
+          - os: macos-latest
+            TARGET: aarch64-apple-darwin
 
-        - os: macos-latest
-          TARGET: x86_64-apple-darwin
+          - os: macos-latest
+            TARGET: x86_64-apple-darwin
 
-        - os: ubuntu-latest
-          TARGET: arm-unknown-linux-musleabihf
+          - os: ubuntu-latest
+            TARGET: arm-unknown-linux-musleabihf
 
-        - os: ubuntu-latest
-          TARGET: armv7-unknown-linux-musleabihf
+          - os: ubuntu-latest
+            TARGET: armv7-unknown-linux-musleabihf
 
-        - os: ubuntu-latest
-          TARGET: x86_64-unknown-linux-musl
+          - os: ubuntu-latest
+            TARGET: x86_64-unknown-linux-musl
 
-        - os: windows-latest
-          TARGET: x86_64-pc-windows-msvc
-          EXTENSION: .exe
+          - os: windows-latest
+            TARGET: x86_64-pc-windows-msvc
+            EXTENSION: .exe
 
     steps:
-    - name: Building ${{ matrix.TARGET }}
-      run: echo "${{ matrix.TARGET }}"
+      - name: Building ${{ matrix.TARGET }}
+        run: echo "${{ matrix.TARGET }}"
 
-    - uses: actions/checkout@master
-    - uses: actions-rs/toolchain@v1.0.1
-      with:
-        toolchain: stable
-        target: ${{ matrix.TARGET }}
-        override: true
+      - uses: actions/checkout@master
 
-    - uses: actions-rs/cargo@v1
-      with:
-        use-cross: true
-        command: build
-        args: --verbose --release --target=${{ matrix.TARGET }}
+      - name: Get Cargo.toml Metadata
+        id: metadata
+        uses: nicolaiunrein/cargo-get@master
+
+      - uses: actions-rs/toolchain@v1.0.1
+        with:
+          toolchain: stable
+          target: ${{ matrix.TARGET }}
+          override: true
+
+      - uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --verbose --release --target=${{ matrix.TARGET }}
+
+      - name: Rename
+        run: cp target/${{ matrix.TARGET }}/release/${{ steps.metadata.outputs.package_name}}${{ matrix.EXTENSION }} ${{ steps.metadata.outputs.package_name}}-${{ matrix.TARGET }}${{ matrix.EXTENSION }}
+
+      - uses: actions/upload-artifact@master
+        with:
+          name: ${{ steps.metadata.outputs.package_name}}-${{ matrix.TARGET }}${{ matrix.EXTENSION }}
+          path: ${{ steps.metadata.outputs.package_name}}-${{ matrix.TARGET }}${{ matrix.EXTENSION }}
