@@ -1,14 +1,14 @@
 [package]
 name = "technus_timecode"
 version = "0.1.0"
-authors = ["Zax71 <>"]
+authors = ["Zax71"]
 edition = "2024"
 include = ["LICENSE-APACHE", "LICENSE-MIT", "**/*.rs", "Cargo.toml"]
 rust-version = "1.88"
 
 [package.metadata.docs.rs]
 all-features = true
-targets = ["x86_64-unknown-linux-gnu", "wasm32-unknown-unknown"]
+targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 egui = "0.33.0"
@@ -28,11 +28,6 @@ serde = { version = "1.0.219", features = ["derive"] }
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 env_logger = "0.11.8"
-
-# web:
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen-futures = "0.4.50"
-web-sys = "0.3.70"              # to access the DOM (to hide the loading text)
 
 [profile.release]
 opt-level = 2 # fast and small wasm

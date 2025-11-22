@@ -97,12 +97,16 @@ jobs:
             runs-on: macOS-latest
             target: x86_64-apple-darwin
 
-          # more targets here ...
-
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Rust cache for ${{ matrix.platform.release_for }}
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: rust-${{ matrix.platform.target }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Get Cargo.toml Metadata
         id: metadata
@@ -116,10 +120,7 @@ jobs:
           args: "--locked --release"
           strip: true
 
-      - name: Rename
-        run: cp target/${{ matrix.platform.target }}/release/${{ steps.metadata.outputs.package_name}}${{ matrix.platform.extension }} ${{ steps.metadata.outputs.package_name}}-${{ matrix.platform.target }}${{ matrix.platform.extension }}
-
       - uses: actions/upload-artifact@master
         with:
-          name: ${{ steps.metadata.outputs.package_name}}-${{ matrix.platform.target }}${{ matrix.platform.extension }}
-          path: ${{ steps.metadata.outputs.package_name}}-${{ matrix.platform.target }}${{ matrix.platform.extension }}
+          name: target/${{ matrix.platform.target }}/release/${{ steps.metadata.outputs.package_name}}${{ matrix.platform.extension }}
+          path: target/${{ matrix.platform.target }}/release/${{ steps.metadata.outputs.package_name}}${{ matrix.platform.extension }}
