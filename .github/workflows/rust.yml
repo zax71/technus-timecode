@@ -102,6 +102,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.platform.target }}
+
       - name: Rust cache for ${{ matrix.platform.release_for }}
         uses: Swatinem/rust-cache@v2
         with:
