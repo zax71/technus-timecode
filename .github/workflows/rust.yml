@@ -73,24 +73,21 @@ jobs:
       matrix:
         platform:
           - os-name: FreeBSD-x86_64
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-22.04
             target: x86_64-unknown-freebsd
             container: hkprog/build-essential:ubuntu-21.04
 
           - os-name: Linux-x86_64
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
-            container: hkprog/build-essential:ubuntu-21.04
 
           - os-name: Linux-aarch64
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-22.04
             target: aarch64-unknown-linux-musl
-            container: hkprog/build-essential:ubuntu-21.04
 
           - os-name: Linux-riscv64
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-22.04
             target: riscv64gc-unknown-linux-gnu
-            container: hkprog/build-essential:ubuntu-21.04
 
           - os-name: Windows-x86_64
             runs-on: windows-latest
@@ -102,7 +99,6 @@ jobs:
             target: x86_64-apple-darwin
 
     runs-on: ${{ matrix.platform.runs-on }}
-    container: ${{ matrix.platform.container }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
