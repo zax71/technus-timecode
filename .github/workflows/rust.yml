@@ -90,7 +90,7 @@ jobs:
           - os-name: Linux-riscv64
             runs-on: ubuntu-latest
             target: riscv64gc-unknown-linux-gnu
-            container: quay.io/pypa/manylinux2014_x86_64
+            container: quay.io/pypa/manylinux2020_x86_64
 
           - os-name: Windows-x86_64
             runs-on: windows-latest
