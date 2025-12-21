@@ -5,7 +5,7 @@ name: CI
 env:
   RUSTFLAGS: -D warnings
   RUSTDOCFLAGS: -D warnings
-  DEPENDENCIES: alsa libasound2
+  DEPENDENCIES: alsa libasound2-dev
 
 jobs:
   check:
