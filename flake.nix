@@ -50,9 +50,12 @@
             # Dev tools
             act # Run GitHub Actions locally
 
+            # Midi
+            alsa-lib
           ];
 
           LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
+          RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
         };
       }
     );
