@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: install dependencies
+        run: sudo apt install alsa
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
@@ -32,7 +36,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - run: sudo apt-get install libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libssl-dev
+      - run: sudo apt-get install libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libssl-dev alsa
       - name: Run test
         run: cargo test --lib
 
@@ -56,6 +60,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: install dependencies
+        run: sudo apt install alsa
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -106,6 +113,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - if: matrix.platform.runs-on == 'ubuntu-22.04'
+        run: sudo apt install alsa
 
       - name: Get Cargo.toml Metadata
         id: metadata
