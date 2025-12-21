@@ -5,6 +5,7 @@ name: CI
 env:
   RUSTFLAGS: -D warnings
   RUSTDOCFLAGS: -D warnings
+  DEPENDENCIES: alsa libsound2
 
 jobs:
   check:
@@ -14,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: install dependencies
-        run: sudo apt install alsa
+        run: sudo apt install ${{env.DEPENDENCIES}}
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -36,7 +37,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      - run: sudo apt-get install libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libssl-dev alsa
+      - run: sudo apt-get install libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libssl-dev ${{env.DEPENDENCIES}}
       - name: Run test
         run: cargo test --lib
 
@@ -62,7 +63,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: install dependencies
-        run: sudo apt install alsa
+        run: sudo apt install ${{env.DEPENDENCIES}}
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -115,7 +116,7 @@ jobs:
         uses: actions/checkout@v4
 
       - if: matrix.platform.runs-on == 'ubuntu-22.04'
-        run: sudo apt install alsa
+        run: sudo apt install ${{env.DEPENDENCIES}}
 
       - name: Get Cargo.toml Metadata
         id: metadata
