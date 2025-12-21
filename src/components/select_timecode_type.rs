@@ -2,19 +2,19 @@ use core::fmt;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TimecodeType {
-    ARTNET,
-    LTC,
-    MTC,
+    Artnet,
+    Ltc,
+    Mtc,
 }
 
 impl fmt::Display for TimecodeType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {
-            Self::ARTNET => write!(f, "Art-Net"),
-            Self::LTC => write!(f, "LTC"),
-            Self::MTC => write!(f, "MTC"),
+            Self::Artnet => write!(f, "Art-Net"),
+            Self::Ltc => write!(f, "LTC"),
+            Self::Mtc => write!(f, "MTC"),
         }
     }
 }
@@ -27,7 +27,7 @@ pub struct SelectTimecodeType {
 impl SelectTimecodeType {
     pub fn new() -> Self {
         Self {
-            current_type: TimecodeType::MTC,
+            current_type: TimecodeType::Mtc,
         }
     }
 
@@ -37,18 +37,18 @@ impl SelectTimecodeType {
             .show_ui(ui, |ui| {
                 ui.selectable_value(
                     &mut self.current_type,
-                    TimecodeType::ARTNET,
-                    format!("{}", TimecodeType::ARTNET),
+                    TimecodeType::Artnet,
+                    format!("{}", TimecodeType::Artnet),
                 );
                 ui.selectable_value(
                     &mut self.current_type,
-                    TimecodeType::LTC,
-                    format!("{}", TimecodeType::LTC),
+                    TimecodeType::Ltc,
+                    format!("{}", TimecodeType::Ltc),
                 );
                 ui.selectable_value(
                     &mut self.current_type,
-                    TimecodeType::MTC,
-                    format!("{}", TimecodeType::MTC),
+                    TimecodeType::Mtc,
+                    format!("{}", TimecodeType::Mtc),
                 );
             });
     }
