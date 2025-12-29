@@ -18,14 +18,14 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "Technus Timecode",
         native_options,
-        Box::new(|cc| Ok(Box::new(technus_timecode::TechnusTimecodeApp::new(cc)))),
+        Box::new(|cc| Ok(Box::new(technus_timecode::App::new(cc)))),
     )
 }
 
-// use std::error::Error;
-// use std::io::{Write, stdin, stdout};
+use std::error::Error;
+use std::io::{Write, stdin, stdout};
 
-// use midir::{Ignore, MidiInput};
+use midir::{Ignore, MidiInput};
 
 // fn main() {
 //     env_logger::init();

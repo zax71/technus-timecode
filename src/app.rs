@@ -1,21 +1,35 @@
-use crate::components::select_timecode_type::SelectTimecodeType;
+use egui_notify::Toasts;
 
-// We derive Deserialize/Serialize so we can persist app state on shutdown.
-#[derive(serde::Deserialize, serde::Serialize)]
-#[serde(default)] // if we add new fields, give them default values when deserializing old state
-pub struct TechnusTimecodeApp {
-    select_timecode_type_component: SelectTimecodeType,
+use crate::{
+    backend::mtc_decoder::MtcTimecodeDecoder, components::select_timecode_type::SelectTimecodeType,
+};
+
+pub struct GlobalState {
+    pub mtc_decoder: MtcTimecodeDecoder,
+    pub toasts: Toasts,
 }
 
-impl Default for TechnusTimecodeApp {
+impl Default for GlobalState {
     fn default() -> Self {
         Self {
-            select_timecode_type_component: SelectTimecodeType::new(),
+            mtc_decoder: MtcTimecodeDecoder::new()
+                .expect("Catastropically failed to initialise MIDI backend"),
+            toasts: Default::default(),
         }
     }
 }
 
-impl TechnusTimecodeApp {
+// We derive Deserialize/Serialize so we can persist app state on shutdown.
+#[derive(serde::Deserialize, serde::Serialize, Default)]
+#[serde(default)] // if we add new fields, give them default values when deserializing old state
+pub struct App {
+    select_timecode_type_component: SelectTimecodeType,
+
+    #[serde(skip)]
+    global_state: GlobalState,
+}
+
+impl App {
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         // This is also where you can customize the look and feel of egui using
@@ -31,7 +45,7 @@ impl TechnusTimecodeApp {
     }
 }
 
-impl eframe::App for TechnusTimecodeApp {
+impl eframe::App for App {
     /// Called by the framework to save state before shutdown.
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         eframe::set_value(storage, eframe::APP_KEY, self);
@@ -60,11 +74,15 @@ impl eframe::App for TechnusTimecodeApp {
             // The central panel the region left after adding TopPanel's and SidePanel's
             ui.heading("Technus Timecode");
 
-            self.select_timecode_type_component.add(ctx, ui);
+            self.select_timecode_type_component
+                .add(ctx, ui, &mut self.global_state);
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 egui::warn_if_debug_build(ui);
             });
         });
+
+        // Display toasts, do this after everything else
+        self.global_state.toasts.show(ctx);
     }
 }
