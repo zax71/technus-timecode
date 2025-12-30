@@ -1,11 +1,13 @@
-use std::fmt::{Display, write};
+use std::fmt::Display;
+
+use serde::{Deserialize, Serialize};
 
 /// Stores timecode values with an associated FPS, can be used for SMPTE timecode and others.
 /// Values are private to enforce the following conditions:
 ///     minutes < 60
 ///     seconds < 60
 ///     frames < fps
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize, Deserialize)]
 pub struct Timecode {
     hours: u8,
     minutes: u8,
@@ -57,6 +59,25 @@ impl Display for Timecode {
             "{}:{}:{}:{} @ {}fps",
             self.hours, self.minutes, self.seconds, self.frames, self.fps
         )
+    }
+}
+
+impl From<midi_msg::TimeCode> for Timecode {
+    fn from(value: midi_msg::TimeCode) -> Self {
+        let fps = match value.code_type {
+            midi_msg::TimeCodeType::FPS24 => 24,
+            midi_msg::TimeCodeType::FPS25 => 25,
+            midi_msg::TimeCodeType::DF30 => 30,
+            midi_msg::TimeCodeType::NDF30 => 30,
+        };
+
+        Self {
+            hours: value.hours,
+            minutes: value.minutes,
+            seconds: value.seconds,
+            frames: value.frames,
+            fps,
+        }
     }
 }
 

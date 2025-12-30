@@ -73,7 +73,7 @@ impl SelectTimecodeType {
                     return;
                 }
             },
-            None => "No MIDI ports available".to_string(),
+            None => "Select a port".to_string(),
         };
 
         ui.horizontal(|ui| {
@@ -102,6 +102,39 @@ impl SelectTimecodeType {
 
             ui.label("FPS:");
             ui.add(DragValue::new(&mut global_state.mtc_decoder.fps));
+
+            let connect_button_text: &str = match global_state.mtc_decoder.connected() {
+                true => "Disconnect",
+                false => "Connect",
+            };
+
+            if ui.button(connect_button_text).clicked() {
+                // Connect to the aforementioned MIDI ports, or throw a toast error
+                if !global_state.mtc_decoder.connected() {
+                    match global_state.mtc_decoder.connect() {
+                        Ok(_) => {
+                            global_state.toasts.success(format!("Connected"));
+                        }
+                        Err(e) => {
+                            global_state
+                                .toasts
+                                .error(format!("Failed to connect to MTC timecode: {e}"));
+                        }
+                    }
+                // Disconnect from the aforementioned MIDI ports, error *should* be unreachable
+                } else {
+                    match global_state.mtc_decoder.disconnect() {
+                        Ok(_) => {
+                            global_state.toasts.info("Disconnected");
+                        }
+                        Err(e) => {
+                            global_state
+                                .toasts
+                                .error(format!("Failed to disconnect: {e}"));
+                        }
+                    }
+                }
+            }
         });
     }
 }

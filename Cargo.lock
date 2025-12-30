@@ -3055,6 +3055,7 @@ dependencies = [
  "egui-notify",
  "env_logger",
  "log",
+ "midi-msg",
  "midi_fundsp",
  "midir",
  "read_input",

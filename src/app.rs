@@ -1,7 +1,8 @@
 use egui_notify::Toasts;
 
 use crate::{
-    backend::mtc_decoder::MtcTimecodeDecoder, components::select_timecode_type::SelectTimecodeType,
+    backend::mtc_decoder::MtcTimecodeDecoder,
+    components::{select_timecode_type::SelectTimecodeType, timecode_display::TimecodeDisplay},
 };
 
 pub struct GlobalState {
@@ -24,6 +25,7 @@ impl Default for GlobalState {
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct App {
     select_timecode_type_component: SelectTimecodeType,
+    timecode_display: TimecodeDisplay,
 
     #[serde(skip)]
     global_state: GlobalState,
@@ -76,6 +78,8 @@ impl eframe::App for App {
 
             self.select_timecode_type_component
                 .add(ctx, ui, &mut self.global_state);
+
+            self.timecode_display.add(ctx, ui, &mut self.global_state);
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 egui::warn_if_debug_build(ui);
