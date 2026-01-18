@@ -22,11 +22,6 @@ fn main() -> eframe::Result {
     )
 }
 
-use std::error::Error;
-use std::io::{Write, stdin, stdout};
-
-use midir::{Ignore, MidiInput};
-
 // fn main() {
 //     env_logger::init();
 //     match run() {

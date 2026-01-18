@@ -12,7 +12,6 @@ use crate::backend::{
 mod timecode_quarter_frame_buffer;
 
 pub struct MtcTimecodeDecoder {
-    pub fps: u8,
     pub port: Option<MidiInputPort>,
     timecode_rx: Option<Receiver<Timecode>>,
     connection: Option<MidiInputConnection<()>>,
@@ -26,7 +25,6 @@ impl MtcTimecodeDecoder {
         midi_in.ignore(Ignore::None);
 
         Ok(Self {
-            fps: 0,
             port: None,
             timecode_rx: None,
             connection: None,
@@ -45,7 +43,7 @@ impl MtcTimecodeDecoder {
     }
 
     /// Connect to the specified MIDI port and start updating timecode.
-    pub fn connect(&mut self) -> Result<()> {
+    pub fn connect(&mut self, ctx: &egui::Context) -> Result<()> {
         let mut midi_in = MidiInput::new("technus timecode reading midi timecode input")?;
         midi_in.ignore(Ignore::None);
 
@@ -63,6 +61,8 @@ impl MtcTimecodeDecoder {
         // Create a channel to send the timecode values from the closure back to our function to get current timecode
         let (tx, rx) = mpsc::channel();
         self.timecode_rx = Some(rx);
+
+        let internal_ctx: egui::Context = ctx.clone();
 
         // Connect to the midi port and (for now) just print everything that comes through it
         let connection = midi_in
@@ -86,6 +86,7 @@ impl MtcTimecodeDecoder {
                     if let Some(tc) = maybe_timecode {
                         // Send the timecode
                         tx.send(tc.into()).expect("MTC Timecode pipe receiving end has been destroyed, cannot send timecode");
+                        internal_ctx.request_repaint();
                     }
                 },
                 (),

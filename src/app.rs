@@ -14,7 +14,7 @@ impl Default for GlobalState {
     fn default() -> Self {
         Self {
             mtc_decoder: MtcTimecodeDecoder::new()
-                .expect("Catastropically failed to initialise MIDI backend"),
+                .expect("Catastrophically failed to initialise MIDI backend"),
             toasts: Default::default(),
         }
     }
@@ -79,7 +79,7 @@ impl eframe::App for App {
             self.select_timecode_type_component
                 .add(ctx, ui, &mut self.global_state);
 
-            self.timecode_display.add(ctx, ui, &mut self.global_state);
+            self.timecode_display.add(ui, &mut self.global_state);
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 egui::warn_if_debug_build(ui);

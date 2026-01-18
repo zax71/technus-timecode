@@ -1,12 +1,8 @@
 use core::fmt;
-use std::fmt::format;
 
-use egui::DragValue;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    app::GlobalState, backend::mtc_decoder::MtcTimecodeDecoder, timecode_type::TimecodeType,
-};
+use crate::{app::GlobalState, timecode_type::TimecodeType};
 
 impl fmt::Display for TimecodeType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -60,7 +56,7 @@ impl SelectTimecodeType {
     }
 
     /// Displays the UI elements to select the MIDI device & FPS
-    fn add_mtc(&mut self, _ctx: &egui::Context, ui: &mut egui::Ui, global_state: &mut GlobalState) {
+    fn add_mtc(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, global_state: &mut GlobalState) {
         // Gets the name of the currently selected port. Will display appropriately if there are no available ports,
         // and will throw a toast if initialising MIDI support failed
         let currently_selected_port_name = match &global_state.mtc_decoder.port {
@@ -100,9 +96,6 @@ impl SelectTimecodeType {
                     }
                 });
 
-            ui.label("FPS:");
-            ui.add(DragValue::new(&mut global_state.mtc_decoder.fps));
-
             let connect_button_text: &str = match global_state.mtc_decoder.connected() {
                 true => "Disconnect",
                 false => "Connect",
@@ -111,7 +104,7 @@ impl SelectTimecodeType {
             if ui.button(connect_button_text).clicked() {
                 // Connect to the aforementioned MIDI ports, or throw a toast error
                 if !global_state.mtc_decoder.connected() {
-                    match global_state.mtc_decoder.connect() {
+                    match global_state.mtc_decoder.connect(ctx) {
                         Ok(_) => {
                             global_state.toasts.success(format!("Connected"));
                         }

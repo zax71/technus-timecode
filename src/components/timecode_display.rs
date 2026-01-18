@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use serde::{Deserialize, Serialize};
 
 use crate::app::GlobalState;
@@ -12,13 +10,12 @@ pub struct TimecodeDisplay {
 }
 
 impl TimecodeDisplay {
-    pub fn add(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, global_state: &mut GlobalState) {
+    pub fn add(&mut self, ui: &mut egui::Ui, global_state: &mut GlobalState) {
         ui.label(format!("{}", self.current_timecode));
 
         // Update the cached timecode value if there is an update
         if let Some(tc) = global_state.mtc_decoder.get_current_timecode() {
             self.current_timecode = tc;
-            ctx.request_repaint(); // Keep the timecode updating even when there is no user input
         }
     }
 }
